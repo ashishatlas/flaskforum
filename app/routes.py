@@ -26,6 +26,47 @@ def deletebucketimg(imgname):
     blob.delete()
 
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            user = User()
+            user.id = form.id.data
+            user.user_name = form.user_name.data
+            user.set_password(form.password.data)
+            user.set_avatar()
+            user.save()
+            flash('Congratulations, successfully registered!')
+            return redirect(url_for('login'))
+
+    return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User().get_obj('id', form.id.data)
+        if user is None:
+            flash('Invalid ID or password')
+            return redirect(url_for('login'))
+        elif not user.check_password(form.password.data):
+            flash('Invalid ID or password')
+            return redirect(url_for('login'))
+
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
+    return render_template('login.html', title='Sign In', form=form)
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
@@ -47,25 +88,6 @@ def index():
     if posts:
         return render_template('index.html', title='Home', form=form, posts=posts)
     return render_template('index.html', title='Home', form=form)
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = RegistrationForm()
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            user = User()
-            user.id = form.id.data
-            user.user_name = form.user_name.data
-            user.set_password(form.password.data)
-            user.set_avatar()
-            user.save()
-            flash('Congratulations, successfully registered!')
-            return redirect(url_for('login'))
-
-    return render_template('register.html', title='Register', form=form)
 
 
 @app.route('/editpost/<postkey>', methods=['GET'])
@@ -146,45 +168,6 @@ def upload():
     return redirect(url_for('index'))
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User().get_obj('id', form.id.data)
-        if user is None:
-            flash('Invalid ID or password')
-            return redirect(url_for('login'))
-        elif not user.check_password(form.password.data):
-            flash('Invalid ID or password')
-            return redirect(url_for('login'))
-
-        login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
-        return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
-
-
-@app.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    form = EditProfileForm()
-    if form.validate_on_submit():
-        if not current_user.check_password(form.password.data):
-            flash('Invalid password')
-            return redirect(url_for('edit_profile'))
-        current_user.set_password(form.newPassword.data)
-        current_user.save()
-        flash('Changed password')
-
-        return redirect(url_for('logout'))
-    return render_template('edit_profile.html', title='Edit Profile',
-                           form=form)
-
-
 @app.route('/logout')
 def logout():
     logout_user()
@@ -208,7 +191,7 @@ def getimg(object):
     def remove_file(response):
         if request.endpoint == "generate_image":
             if os.path.isfile(fullpath):
-                os.remove(fullpath,mimetype='image/gif')
+                os.remove(fullpath, mimetype='image/gif')
         return response
 
     return send_file(fullpath)
@@ -235,3 +218,20 @@ def user(user_name):
     if posts:
         return render_template('user.html', user=user, posts=posts)
     return render_template('user.html', user=user)
+
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        if not current_user.check_password(form.password.data):
+            flash('Invalid password')
+            return redirect(url_for('edit_profile'))
+        current_user.set_password(form.newPassword.data)
+        current_user.save()
+        flash('Changed password')
+
+        return redirect(url_for('logout'))
+    return render_template('edit_profile.html', title='Edit Profile',
+                           form=form)
