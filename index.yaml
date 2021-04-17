@@ -1,0 +1,8 @@
+indexes:
+
+- kind: post
+  ancestor: no
+  properties:
+  - name: user_id
+  - name: date_created
+    direction: desc

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<table class="table table-hover">
+    <tr>
+        <td width="width:100%"><img src="{{ url_for('getimg', object=user.get_avatar()) }}"></td>
+        <td>
+            <h1>User {{ user.user_name }}</h1>
+            {% if user == current_user %}
+            <p><a href="{{ url_for('edit_profile') }}">Edit your password</a></p>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+
+<p>Top 10 recent user's posts</p>
+<table>
+    {% for post in posts %}
+    <tr>
+        <td width="width:100%"><img src="{{ url_for('getimg', object=post['img_name'] ) }}"></td>
+        <td>
+            Post User: {{ post['user_name'] }}<br>
+            Post subject: {{ post['subject'] }}<br>
+            Post text: {{ post['text'] }}<br>
+            Post time created: {{moment(post['date_created']).format('LLL')}}<br>
+            <a href="{{ url_for('editpost', postkey = post['keyid']) }}">Edit post</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

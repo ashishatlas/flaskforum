@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Hi, {{ current_user.user_name }}!</h1>
+<form method="POST" action="/editpost" enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/x-png,image/gif,image/jpeg">
+    <p>
+        {{ form.subject.label }}<br>
+        {{ form.subject(cols=32, rows=2) }}<br>
+        {% for error in form.subject.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+        {{ form.text.label }}<br>
+        {{ form.text(cols=32, rows=4) }}<br>
+        {% for error in form.text.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <input type="submit">
+</form>
+{% endblock %}
