@@ -208,7 +208,7 @@ def getimg(object):
     def remove_file(response):
         if request.endpoint == "generate_image":
             if os.path.isfile(fullpath):
-                os.remove(fullpath)
+                os.remove(fullpath,mimetype='image/gif')
         return response
 
     return send_file(fullpath)
