@@ -7,7 +7,7 @@
         <tr>
             <td width="256px"><img src="{{ url_for('getimg', object=current_user.get_avatar()) }}"></td>
             <td>
-                <h1>User {{ current_user.user_name }}</h1>
+                <h1><a href="{{ url_for('user', user_name=current_user.user_name) }}">User {{ current_user.user_name }}</a></h1>
             </td>
         </tr>
     </table>
