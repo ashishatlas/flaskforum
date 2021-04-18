@@ -22,12 +22,12 @@ class RegistrationForm(FlaskForm):
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
 
-    def check_user_name(self, user_name):
+    def validate_user_name(self, user_name):
         user = User().get_obj('user_name', user_name.data)
         if user is not None:
-            raise ValidationError('The user_name already exists')
+            raise ValidationError('The Username already exists')
 
-    def check_id(self, id):
+    def validate_id(self, id):
         user = User().get_obj('id', id.data)
         if user is not None:
             raise ValidationError('The ID already exists')

@@ -141,28 +141,26 @@ def upload():
     """Process the uploaded file and upload it to Google Cloud Storage."""
     uploaded_file = request.files.get('file')
     form = PostForm()
-    if not uploaded_file:
-        return 'No file uploaded.', 400
-
-    imgname = secure_filename(uploaded_file.filename)
-    imgname = current_user.id + '_' + imgname
-    # Create a Cloud Storage client.
-    gcs = storage.Client()
-
-    # Get the bucket that the file will be uploaded to.
-    bucket = gcs.get_bucket(config.Config.CLOUD_STORAGE_BUCKET)
-
-    # Create a new blob and upload the file's content.
-    blob = bucket.blob(imgname.lower())
-
-    blob.upload_from_string(
-        uploaded_file.read(),
-        content_type=uploaded_file.content_type
-    )
     post = Post()
+    if uploaded_file:
+        imgname = secure_filename(uploaded_file.filename)
+        imgname = current_user.id + '_' + imgname
+        # Create a Cloud Storage client.
+        gcs = storage.Client()
+
+        # Get the bucket that the file will be uploaded to.
+        bucket = gcs.get_bucket(config.Config.CLOUD_STORAGE_BUCKET)
+
+        # Create a new blob and upload the file's content.
+        blob = bucket.blob(imgname.lower())
+
+        blob.upload_from_string(
+            uploaded_file.read(),
+            content_type=uploaded_file.content_type
+        )
+        post.img_name = imgname.lower()
     post.subject = form.subject.data
     post.text = form.text.data
-    post.img_name = imgname.lower()
     post.user_id = current_user.id
     post.save()
     return redirect(url_for('index'))

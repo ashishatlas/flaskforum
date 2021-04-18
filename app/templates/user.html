@@ -3,7 +3,9 @@
 {% block app_content %}
 <table class="table table-hover">
     <tr>
-        <td width="width:100%"><img src="{{ url_for('getimg', object=user.get_avatar()) }}"></td>
+        <td width="width:100%">
+            {% if user.get_avatar() %}<img src="{{ url_for('getimg', object=user.get_avatar()) }}">
+            {% endif %}</td>
         <td>
             <h1>User {{ user.user_name }}</h1>
             {% if user == current_user %}
@@ -17,7 +19,9 @@
 <table>
     {% for post in posts %}
     <tr>
-        <td width="width:100%"><img src="{{ url_for('getimg', object=post['img_name'] ) }}"></td>
+        <td width="width:100%">{% if post['img_name'] %}<img src="{{ url_for('getimg', object=post['img_name'] ) }}">
+            {% endif %}
+        </td>
         <td>
             Post User: {{ post['user_name'] }}<br>
             Post subject: {{ post['subject'] }}<br>

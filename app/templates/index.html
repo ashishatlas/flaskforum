@@ -2,17 +2,17 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <h1>
-        <table class="table table-hover">
+<h1>
+    <table class="table table-hover">
         <tr>
             <td width="256px"><img src="{{ url_for('getimg', object=current_user.get_avatar()) }}"></td>
             <td>
                 <h1>User {{ current_user.user_name }}</h1>
             </td>
         </tr>
-        </table>
-    </h1>
-    <form method="POST" action="/upload" enctype="multipart/form-data">
+    </table>
+</h1>
+<form method="POST" action="/upload" enctype="multipart/form-data">
     <input type="file" name="file" accept="image/x-png,image/gif,image/jpeg">
     <p>
         {{ form.subject.label }}<br>
@@ -27,23 +27,25 @@
         {% endfor %}
     </p>
     <input type="submit">
-    </form>
+</form>
 
-    <p>Top 10 recent posts</p>
-    <table>
+<p>Top 10 recent posts</p>
+<table>
     {% for post in posts %}
-        <tr>
-        <td width="width:100%"><img src="{{ url_for('getimg', object=post['img_name'] ) }}"></td>
+    <tr>
+        <td width="width:100%">{% if post['img_name'] %}<img src="{{ url_for('getimg', object=post['img_name'] ) }}">
+            {% endif %}
+        </td>
         <td>
             Post User: {{ post['user_name'] }}<br>
             Post subject: {{ post['subject'] }}<br>
             Post text: {{ post['text'] }}<br>
             Post time created: {{moment(post['date_created']).format('LLL')}}<br>
             {% if post['user_id'] == current_user.id %}
-                <p><a href="{{ url_for('editpost', postkey = post['keyid']) }}">Edit post</a></p>
+            <p><a href="{{ url_for('editpost', postkey = post['keyid']) }}">Edit post</a></p>
             {% endif %}
         </td>
-        </tr>
+    </tr>
     {% endfor %}
-    </table>
+</table>
 {% endblock %}
